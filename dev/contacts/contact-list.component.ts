@@ -1,32 +1,32 @@
 import {Component} from 'angular2/core';
 import {ContactComponent} from '../contacts/contact.component';
+import {ContactService} from './contact.service';
+import {Contact} from './contact';
+import {OnInit} from 'angular2/core';
+
 
 @Component({
 	selector: "contact-list", 
-	template: `
-		<ul>
-			<li *ngFor="#contact of contacts"
-				(click)="onSelect(contact)"
-	     		[class.clicked]="selectedContact === contact"
-	     	>
-			{{contact.firstName}} {{contact.lastName}}
-	     	</li>
-    	</ul>
-    	<contact [contact]="selectedContact"></contact>
-	`, 
+	templateUrl: './dev/contacts/contact-list.template.html', 
 	directives: [ContactComponent], 
-	styleUrls: ["../src/css/app.css"]
+	providers: [ContactService], 
+	styleUrls: ["../src/css/contact-list.css"]
 })
-export class ContactListComponent {
-	public contacts = [
-		{ firstName: "Stef", lastName: "Kami", phone:"0123 456 789", email: "stefkami@gmail.com" },
-		{ firstName: "Chris", lastName: "Rahces", phone:"0548 548 684", email: "test@test.com" },
-		{ firstName: "Michael", lastName: "Alloy", phone:"0589 429 369", email: "michael@gmx.com" },
-		{ firstName: "Indira", lastName: "Galah", phone:"0298 422 333", email: "indira@gmail.com" }
-	 ];
-	public selectedContact = {};
+export class ContactListComponent implements OnInit{
+	public contacts: Contact[];
+	public selectedContact = null;
+
+	constructor(private _contactService: ContactService) {}
 
 	onSelect(contact){
 		this.selectedContact = contact;
+	}
+
+	getContacts() {
+		this._contactService.getContacts().then((contacts:Contact[]) => this.contacts = contacts);
+	}
+
+	ngOnInit():any {
+		this.getContacts();
 	}
 }
